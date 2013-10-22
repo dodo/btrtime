@@ -28,7 +28,7 @@ if [ -f "$PWD/$HOST/config" ]; then
     # load config
     . "$PWD/$HOST/config"
 else
-    cp "$(dirname $0)/.default.config" "$PWD/$HOST/config"
+    cp "$(dirname $0)/.default.config.sh" "$PWD/$HOST/config"
     echo "Need a config!  Please edit $PWD/$HOST/config first."
     echo "rsync exclude file is at $PWD/$HOST/ignore"
     exit 23

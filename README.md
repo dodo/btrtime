@@ -17,7 +17,7 @@ mkdir /backup
 
 ```bash
 git clone git://github.com/dodo/btrtime.git && cd btrtime
-ln -s .backup.script `hostname`
+ln -s .backup.script.sh `hostname`
 su
 cryptdisks_start backup
 mount /backup
