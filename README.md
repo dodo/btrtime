@@ -25,7 +25,7 @@ mount /backup
 cd .. && mv btrtime /backup/scripts
 vim /backup/backup/$(hostname)/config
 vim /backup/backup/$(hostname)/ignore
-./$(hostname) # repeat
+/backup/scripts/$(hostname) # repeat
 ```
 
 ```
