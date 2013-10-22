@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo "start defragmentation of backups …"
+find "$(dirname $0)/" -xdev -type f -print -exec btrfs filesystem defrag '{}' \;
+echo "defragmentation done."
