@@ -9,6 +9,7 @@ fi
 STUB_CONFIG=false
 PARTITION_TABLES=""
 LUKS_HEADERS=""
+MBR_HEADERS=""
 ENTRIES=""
 SCRUB=false
 # get env
@@ -89,6 +90,19 @@ if [[ "x$LUKS_HEADERS" != "x" ]]; then
             cryptsetup luksHeaderBackup $dev --header-backup-file="$TMP/luks"
             rsync -au "$TMP/luks" "$PWD/$HOST/$(basename $dev).luks"
             rm "$TMP/luks"
+        else
+            echo "device $dev doesn't exist!"
+        fi
+    done
+fi
+
+if [[ "x$MBR_HEADERS" != "x" ]]; then
+    echo "backup mbr header …"
+    for dev in $MBR_HEADERS; do
+        if [ -L $dev ]; then
+            dd if=$dev of="$TMP/mbr" bs=512 count=1
+            rsync -au "$TMP/mbr" "$PWD/$HOST/$(basename $dev).mbr"
+            rm "$TMP/mbr"
         else
             echo "device $dev doesn't exist!"
         fi
