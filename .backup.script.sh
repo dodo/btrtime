@@ -26,8 +26,17 @@ mkdir -p $CWD
 mkdir -p "$PWD/$HOST"
 touch "$PWD/$HOST/ignore"
 if [ -f "$PWD/$HOST/config" ]; then
+
+    # allow secure tmp space
+    mkdir -p $TMP
+    mount -t ramfs ramfs $TMP
+    chown root:root $TMP
+    chmod 0600 $TMP
+    # mount to $TMP/$FOO is now available in configs
+
     # load config
     . "$PWD/$HOST/config"
+
 else
     cp "$(dirname $0)/.default.config.sh" "$PWD/$HOST/config"
     echo "Need a config!  Please edit $PWD/$HOST/config first."
@@ -37,6 +46,13 @@ fi
 
 if $STUB_CONFIG; then
     echo "Need a config!  Please edit $PWD/$HOST/config properly."
+
+    # umount $TMP and all mountpoints that the config might created
+    for mnt in $(mount | cut -d" " -f3 | egrep "^$TMP" | sort --reverse); do
+        umount $mnt
+    done
+    rmdir --ignore-fail-on-non-empty $TMP
+
     exit 13
 fi
 
@@ -61,12 +77,6 @@ else
     echo "start $HOST backup …"
     btrfs subvolume snapshot "$OLD" "$CWD/$NAME"
 fi
-
-# allow secure tmp space
-mkdir -p $TMP
-mount -t ramfs ramfs $TMP
-chown root:root $TMP
-chmod 0600 $TMP
 
 
 if [[ "x$PARTITION_TABLES" != "x" ]]; then
@@ -109,7 +119,10 @@ if [[ "x$MBR_HEADERS" != "x" ]]; then
     done
 fi
 
-umount $TMP
+# umount $TMP and all mountpoints that the config might created
+for mnt in $(mount | cut -d" " -f3 | egrep "^$TMP" | sort --reverse); do
+    umount $mnt
+done
 rmdir --ignore-fail-on-non-empty $TMP
 
 # get previously deleted files
