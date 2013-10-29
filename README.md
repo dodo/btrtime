@@ -55,6 +55,7 @@ vim /backup/backup/$(hostname)/ignore
     rsync
     gdisk
     cryptsetup
+    sed
     
     
     
