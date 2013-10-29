@@ -13,7 +13,7 @@ MBR_HEADERS=""
 ENTRIES=""
 SCRUB=false
 # get env
-MNT=/tmp/backup
+MNT=/backup
 TRG="shared"
 TMP="$MNT/tmp"
 PWD="$MNT/backup"
