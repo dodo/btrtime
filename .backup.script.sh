@@ -7,9 +7,9 @@ fi
 
 # default config
 STUB_CONFIG=false
-PARTITION_TABLES=""
 LUKS_HEADERS=""
-MBR_HEADERS=""
+MBR_TABLES=""
+GPT_TABLES=""
 ENTRIES=""
 SCRUB=false
 # get env
@@ -79,20 +79,6 @@ else
 fi
 
 
-if [[ "x$PARTITION_TABLES" != "x" ]]; then
-    echo "backup partion table …"
-    # TODO support other partion table formats
-    for dev in $PARTITION_TABLES; do
-        if [ -L $dev ]; then
-            sgdisk --backup="$TMP/gpt" $dev
-            rsync -au "$TMP/gpt" "$PWD/$HOST/$(basename $dev).gpt"
-            rm "$TMP/gpt"
-        else
-            echo "device $dev doesn't exist!"
-        fi
-    done
-fi
-
 if [[ "x$LUKS_HEADERS" != "x" ]]; then
     echo "backup luks header …"
     for dev in $LUKS_HEADERS; do
@@ -106,13 +92,26 @@ if [[ "x$LUKS_HEADERS" != "x" ]]; then
     done
 fi
 
-if [[ "x$MBR_HEADERS" != "x" ]]; then
-    echo "backup mbr header …"
-    for dev in $MBR_HEADERS; do
+if [[ "x$MBR_TABLES" != "x" ]]; then
+    echo "backup mbr partition table …"
+    for dev in $MBR_TABLES; do
         if [ -L $dev ]; then
             dd if=$dev of="$TMP/mbr" bs=512 count=1
             rsync -au "$TMP/mbr" "$PWD/$HOST/$(basename $dev).mbr"
             rm "$TMP/mbr"
+        else
+            echo "device $dev doesn't exist!"
+        fi
+    done
+fi
+
+if [[ "x$GPT_TABLES" != "x" ]]; then
+    echo "backup gpt partition table …"
+    for dev in $GPT_TABLES; do
+        if [ -L $dev ]; then
+            sgdisk --backup="$TMP/gpt" $dev
+            rsync -au "$TMP/gpt" "$PWD/$HOST/$(basename $dev).gpt"
+            rm "$TMP/gpt"
         else
             echo "device $dev doesn't exist!"
         fi
