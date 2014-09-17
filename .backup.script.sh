@@ -142,5 +142,8 @@ if $SCRUB; then
     btrfs scrub start -B "$CWD/$NAME"
 fi
 
+# compress log file at last
+gzip $LOG
+
 echo "done."
 
